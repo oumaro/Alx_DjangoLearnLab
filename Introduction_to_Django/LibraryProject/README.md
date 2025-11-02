@@ -15,6 +15,11 @@ LibraryProject is a Django-based application created as part of the ALX Django L
 pip install django
 ```
 
+Verify Django installation:
+```bash
+django-admin --version
+```
+
 ### 2. Navigate to Project Directory
 ```bash
 cd LibraryProject
@@ -25,5 +30,4 @@ cd LibraryProject
 python manage.py runserver
 ```
 
-### 4. View the Application
-Open your web browser and navigate to:
+You should see output similar to:
