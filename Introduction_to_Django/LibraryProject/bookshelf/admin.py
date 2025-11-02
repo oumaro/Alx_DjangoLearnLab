@@ -1,23 +1,25 @@
 from django.contrib import admin
 from .models import Book
 
-
-@admin.register(Book)
+# Define a custom Admin class for the Book model
 class BookAdmin(admin.ModelAdmin):
     """
-    Admin interface configuration for the Book model.
+    Customizes the display and functionality of the Book model in the Django admin.
     """
-    # Fields to display in the list view
+    # 1. Customize the list view columns: Display title, author, and publication_year.
     list_display = ('title', 'author', 'publication_year')
-    
-    # Fields to filter by in the right sidebar
-    list_filter = ('author', 'publication_year')
-    
-    # Fields to search
+
+    # 2. Add search functionality for the title and author fields.
     search_fields = ('title', 'author')
-    
-    # Ordering
-    ordering = ('title',)
-    
-    # Fields to display in the form
-    fields = ('title', 'author', 'publication_year')
+
+    # 3. Add list filters to easily filter books by publication year.
+    list_filter = ('publication_year',)
+
+    # 4. Make 'title' a link to the change view. (It's often the default, but good to include)
+    list_display_links = ('title',)
+
+    # 5. Add a simple date hierarchy (optional, but nice for dates)
+    # date_hierarchy = 'publication_year' # Use if publication_year was a DateField
+
+# Register the Book model with the custom configuration
+admin.site.register(Book, BookAdmin)
