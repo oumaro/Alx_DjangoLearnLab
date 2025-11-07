@@ -1,33 +1,20 @@
 # relationship_app/views.py
 
 from django.shortcuts import render
-# Ensure Book is imported so Book.objects.all() works
-from .models import Book, Library 
-from django.views.generic import DetailView
+from .models import Book 
+# ... other imports (Library, DetailView, etc.)
 
-# --- 1. Function-based View (FBV) ---
 def list_books(request):
-    """Lists all books and their authors."""
-    
-    # **FIXED/REQUIRED LINE:** Uses Book.objects.all() 
-    # and select_related('author') for good practice (single query).
+    """
+    Renders a simple text list of book titles and their authors.
+    """
+    # 1. Get the data
+    # select_related('author') ensures author name is fetched in one query.
     all_books = Book.objects.select_related('author').all()
     
     context = {
-        'books': all_books,
-        'view_type': 'Function-based View (FBV)'
+        'books': all_books, # Passes the QuerySet to the template
     }
     
-    # **FIXED/REQUIRED LINE:** Calls render with the correct template name
-    # Note: It MUST NOT include the app name in the template path here.
+    # 2. Render the correct template name (MUST be 'list_books.html' only)
     return render(request, 'list_books.html', context)
-
-# --- 2. Class-based View (CBV) ---
-class LibraryDetailView(DetailView):
-    # ... (Keep the rest of the LibraryDetailView code as is)
-    model = Library
-    template_name = 'library_detail.html'
-    context_object_name = 'library'
-    
-    def get_queryset(self):
-        return Library.objects.prefetch_related('books__author')
