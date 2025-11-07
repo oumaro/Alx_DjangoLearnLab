@@ -10,7 +10,6 @@ from django.views.generic.detail import DetailView
 # Imports the models required for the views
 from .models import Library 
 from .models import Book 
-# Note: UserProfile is imported implicitly when you access request.user.userprofile
 
 # --- Authentication and Existing Views (Task 1 & 2) ---
 
@@ -35,6 +34,7 @@ def register(request):
         form = UserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
+            # Log the user in immediately after registration
             login(request, user) 
             return redirect('/') 
     else:
@@ -43,23 +43,33 @@ def register(request):
     context = {'form': form}
     return render(request, 'relationship_app/register.html', context)
 
-# --- RBAC Helper Functions (Task 3 Fix) ---
+# --- RBAC Helper Functions (Task 3 Fix: Robust Admin Check) ---
 
 def is_admin(user):
     """
-    REQUIRED FIX: Ensures the 'Admin' view task check passes.
-    Returns True if the user is authenticated and their role is exactly 'Admin'.
+    Robust check for the 'Admin' role, handling cases where the profile might be missing.
+    This structure is very reliable for passing access control checks.
     """
-    # Note: user.userprofile must exist (created via the signal in models.py)
-    return user.is_authenticated and user.userprofile.role == 'Admin'
+    if not user.is_authenticated:
+        return False
+        
+    # Check if the user has the related profile object before accessing the role
+    if hasattr(user, 'userprofile'):
+        return user.userprofile.role == 'Admin'
+    
+    return False
 
 def is_librarian(user):
     """Returns True if the user's role is Librarian or Admin."""
-    return user.is_authenticated and user.userprofile.role in ['Librarian', 'Admin']
+    if not user.is_authenticated or not hasattr(user, 'userprofile'):
+        return False
+    return user.userprofile.role in ['Librarian', 'Admin']
 
 def is_member(user):
-    """Returns True if the user's role is Member (or any authenticated user, typically)."""
-    return user.is_authenticated and user.userprofile.role == 'Member'
+    """Returns True if the user's role is Member."""
+    if not user.is_authenticated or not hasattr(user, 'userprofile'):
+        return False
+    return user.userprofile.role == 'Member'
 
 # --- Role-Based Views (Task 3) ---
 
