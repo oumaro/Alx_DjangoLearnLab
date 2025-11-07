@@ -1,49 +1,70 @@
-# relationship_app/models.py
-
 from django.db import models
 
-# --- 1. ForeignKey Relationship: One Author has Many Books ---
-
 class Author(models.Model):
-    """The 'One' side of the relationship."""
-    name = models.CharField(max_length=100)
+    """
+    Represents an author who writes books.
+    """
+    name = models.CharField(max_length=200)
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        ordering = ['name']
+
 
 class Book(models.Model):
-    """The 'Many' side of the relationship."""
+    """
+    Represents a book written by an author.
+    Uses ForeignKey to establish a many-to-one relationship with Author.
+    """
     title = models.CharField(max_length=200)
-    
-    # ForeignKey to Author. If an Author is deleted, all their Books are deleted (CASCADE).
-    # related_name='books' allows us to call author.books.all()
-    author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='books')
+    author = models.ForeignKey(
+        Author,
+        on_delete=models.CASCADE,
+        related_name='books'
+    )
 
     def __str__(self):
-        return self.title
+        return f"{self.title} by {self.author.name}"
 
-# --- 2. ManyToMany Relationship: Many Libraries have Many Books ---
+    class Meta:
+        ordering = ['title']
+
 
 class Library(models.Model):
-    """One Library can hold Many Books, and one Book can be in Many Libraries."""
-    name = models.CharField(max_length=100)
-    
-    # ManyToManyField to Book.
-    # related_name='libraries' allows us to call book.libraries.all()
-    books = models.ManyToManyField(Book, related_name='libraries')
+    """
+    Represents a library that contains multiple books.
+    Uses ManyToManyField to establish a many-to-many relationship with Book.
+    """
+    name = models.CharField(max_length=200)
+    books = models.ManyToManyField(
+        Book,
+        related_name='libraries'
+    )
 
     def __str__(self):
         return self.name
 
-# --- 3. OneToOne Relationship: One Library has One Librarian ---
+    class Meta:
+        verbose_name_plural = "Libraries"
+        ordering = ['name']
+
 
 class Librarian(models.Model):
-    """One Librarian is assigned to exactly one Library."""
-    name = models.CharField(max_length=100)
-    
-    # OneToOneField to Library. Deleting the Library deletes the Librarian.
-    # The 'Library' instance can now be accessed via library.librarian
-    library = models.OneToOneField(Library, on_delete=models.CASCADE)
+    """
+    Represents a librarian who manages a library.
+    Uses OneToOneField to establish a one-to-one relationship with Library.
+    """
+    name = models.CharField(max_length=200)
+    library = models.OneToOneField(
+        Library,
+        on_delete=models.CASCADE,
+        related_name='librarian'
+    )
 
     def __str__(self):
-        return f"Librarian: {self.name} ({self.library.name})"
+        return f"{self.name} - {self.library.name}"
+
+    class Meta:
+        ordering = ['name']
