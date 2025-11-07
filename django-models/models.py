@@ -2,57 +2,48 @@
 
 from django.db import models
 
-# --- ForeignKey Relationship: One Author has Many Books ---
+# --- 1. ForeignKey Relationship: One Author has Many Books ---
 
 class Author(models.Model):
-    """
-    The 'One' side of the ForeignKey relationship.
-    An Author can have multiple Books.
-    """
+    """The 'One' side of the relationship."""
     name = models.CharField(max_length=100)
 
     def __str__(self):
         return self.name
 
 class Book(models.Model):
-    """
-    The 'Many' side of the ForeignKey relationship.
-    A Book has one Author.
-    """
+    """The 'Many' side of the relationship."""
     title = models.CharField(max_length=200)
-    # The ForeignKey relationship: models.CASCADE means if the Author is deleted, 
-    # all their books are also deleted.
+    
+    # ForeignKey to Author. If an Author is deleted, all their Books are deleted (CASCADE).
+    # related_name='books' allows us to call author.books.all()
     author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='books')
 
     def __str__(self):
         return self.title
 
-# --- ManyToMany Relationship: Many Libraries have Many Books ---
+# --- 2. ManyToMany Relationship: Many Libraries have Many Books ---
 
 class Library(models.Model):
-    """
-    One side of the ManyToMany relationship.
-    A Library can contain many Books.
-    """
+    """One Library can hold Many Books, and one Book can be in Many Libraries."""
     name = models.CharField(max_length=100)
-    # The ManyToMany relationship: A Library can have multiple Books, and a Book 
-    # can be in multiple Libraries.
+    
+    # ManyToManyField to Book.
+    # related_name='libraries' allows us to call book.libraries.all()
     books = models.ManyToManyField(Book, related_name='libraries')
 
     def __str__(self):
         return self.name
 
-# --- OneToOne Relationship: One Library has One Librarian ---
+# --- 3. OneToOne Relationship: One Library has One Librarian ---
 
 class Librarian(models.Model):
-    """
-    One side of the OneToOne relationship.
-    A Librarian is assigned to exactly one Library (and vice versa).
-    """
+    """One Librarian is assigned to exactly one Library."""
     name = models.CharField(max_length=100)
-    # The OneToOne relationship: Links one Librarian record to exactly one Library record.
-    # The 'on_delete=models.CASCADE' means if the Library is deleted, the Librarian record is deleted too.
-    library = models.OneToOneField(Library, on_delete=models.CASCADE, primary_key=True)
+    
+    # OneToOneField to Library. Deleting the Library deletes the Librarian.
+    # The 'Library' instance can now be accessed via library.librarian
+    library = models.OneToOneField(Library, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"Librarian: {self.name}"
+        return f"Librarian: {self.name} ({self.library.name})"
