@@ -25,7 +25,7 @@ urlpatterns = [
     # Task 3: Role-Based Views
     path('admin_only/', admin_view, name='admin_view'),
     path('librarian_desk/', librarian_view, name='librarian_view'),
-    path('member_zone/', member_view, name='member_view'),
+    path('member_zone/', member_view, name='member_zone'),
     
     # Task 4: Secured CRUD Views
     path('books/add/', book_add, name='book_add'),
