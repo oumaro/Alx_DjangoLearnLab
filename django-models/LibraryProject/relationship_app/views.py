@@ -44,7 +44,7 @@ def register(request):
     context = {'form': form}
     return render(request, 'relationship_app/register.html', context)
 
-# --- 3. RBAC Helper Functions (Task 3) ---
+# --- 3. RBAC Helper Functions (Task 3 Fixes) ---
 
 def is_admin(user):
     """Checks for the 'Admin' role."""
@@ -82,13 +82,12 @@ def member_view(request):
     return render(request, 'relationship_app/member_view.html', {'role': 'Member'})
 
 # --- 5. Custom Permission Views (Task 4) ---
-# NOTE: Placeholder logic is used since forms are not provided.
 
 @permission_required('relationship_app.can_add_book', login_url='/login/', raise_exception=True)
 def book_add(request):
     """Secured view to add a new book."""
     if request.method == 'POST':
-        # Add book creation logic here
+        # Placeholder for form handling
         return redirect('book_list')
     return render(request, 'relationship_app/book_form.html', {'action': 'Add'})
 
@@ -97,7 +96,7 @@ def book_edit(request, pk):
     """Secured view to edit an existing book."""
     book = get_object_or_404(Book, pk=pk)
     if request.method == 'POST':
-        # Add book update logic here
+        # Placeholder for form handling
         return redirect('book_list')
     return render(request, 'relationship_app/book_form.html', {'book': book, 'action': 'Edit'})
 
