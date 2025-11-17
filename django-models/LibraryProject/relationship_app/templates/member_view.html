@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Member Zone</title>
+</head>
+<body>
+    <h1>Welcome, {{ request.user.username }}!</h1>
+    <h2>Member Zone (Role: {{ role }})</h2>
+    <p>You can view book lists and your borrowing history.</p>
+    <p><a href="{% url 'logout' %}">Logout</a></p>
+</body>
+</html>
